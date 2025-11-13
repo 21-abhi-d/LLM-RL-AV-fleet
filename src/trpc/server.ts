@@ -1,30 +1,43 @@
-import "server-only";
+// import "server-only";
 
-import { createHydrationHelpers } from "@trpc/react-query/rsc";
-import { headers } from "next/headers";
-import { cache } from "react";
+// import { createHydrationHelpers } from "@trpc/react-query/rsc";
+// import { headers } from "next/headers";
+// import { cache } from "react";
 
-import { createCaller, type AppRouter } from "~/server/api/root";
-import { createTRPCContext } from "~/server/api/trpc";
-import { createQueryClient } from "./query-client";
+// import { appRouter, type AppRouter } from "~/server/api/root";
+// import { createTRPCContext } from "~/server/api/trpc";
+// import { createQueryClient } from "./query-client";
 
-/**
- * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when
- * handling a tRPC call from a React Server Component.
- */
-const createContext = cache(async () => {
-  const heads = new Headers(await headers());
-  heads.set("x-trpc-source", "rsc");
+// /**
+//  * Creates the context for tRPC in RSC.
+//  */
+// const createContext = cache(async () => {
+//   const heads = new Headers(await headers());
+//   heads.set("x-trpc-source", "rsc");
+//   return createTRPCContext({ headers: heads });
+// });
 
-  return createTRPCContext({
-    headers: heads,
-  });
-});
+// /**
+//  * ✅ Create a synchronous wrapper that internally resolves context.
+//  * This ensures `createHydrationHelpers` receives a valid caller instance.
+//  */
+// const getCaller = cache(async () => {
+//   const ctx = await createContext();
+//   return appRouter.createCaller(ctx);
+// });
 
-const getQueryClient = cache(createQueryClient);
-const caller = createCaller(createContext);
+// /**
+//  * ✅ Pass a function that resolves the caller, not an async arrow directly.
+//  */
+// const caller = async (...args: Parameters<ReturnType<typeof getCaller>["someMethod"]>) =>
+//   (await getCaller()) as unknown; // generic-safe workaround
 
-export const { trpc: api, HydrateClient } = createHydrationHelpers<AppRouter>(
-  caller,
-  getQueryClient,
-);
+// const getQueryClient = cache(createQueryClient);
+
+// /**
+//  * ✅ The correct call signature.
+//  */
+// export const { trpc: api, HydrateClient } = createHydrationHelpers<AppRouter>(
+//   await getCaller(),
+//   getQueryClient,
+// );
