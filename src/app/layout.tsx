@@ -8,7 +8,6 @@ import { TRPCReactProvider } from "~/trpc/react";
 export const metadata: Metadata = {
   title: "LLM RL AV Fleet Demo",
   description: "LLM RL AV Fleet Demo",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
 const geist = Geist({
